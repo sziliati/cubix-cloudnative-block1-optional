@@ -1,0 +1,17 @@
+name: Run only on feature branches
+
+on:
+  push:
+    branches:
+      - "feature/**"
+      - "ci/**"
+
+jobs:
+  clean-test:
+    name: Run clean test on feature branch pushes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Run tests
+        run: ./mvnw clean test
