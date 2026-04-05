@@ -11,29 +11,6 @@ on:
       - main
 
 jobs:
-  package-verify:
-    name: Run build and verify on pushes to main
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up JDK
-        uses: actions/setup-java@v5
-        with:
-          java-version: "26"
-          distribution: "temurin"
-          cache: "maven"
-
-      - name: Build with Maven
-        run: ./mvnw package
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: java-app
-          path: "${{ github.workspace }}/target/*.jar"
-
   build-maven:
     runs-on: ubuntu-latest
     needs: package-verify
@@ -48,12 +25,12 @@ jobs:
           cache: "maven"
 
       - name: Build with Maven
-        run: ./mvnw package
+        run: ./mvnw clean package verify
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: java-app
+          name: java-optional-app
           path: "${{ github.workspace }}/target/*.jar"
 
   build-docker:
