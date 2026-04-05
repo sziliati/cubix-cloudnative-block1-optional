@@ -12,7 +12,15 @@ jobs:
     name: Run integration test on pull requests to main
     runs-on: ubuntu-latest
     steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "26"
+          distribution: "temurin"
+          cache: "maven"
+
       - name: Checkout code
         uses: actions/checkout@v6
+
       - name: Run integration tests
         run: ./mvnw clean integration-test
