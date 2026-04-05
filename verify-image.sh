@@ -10,7 +10,7 @@ fi
 docker rm -f test > /dev/null 2>&1 || true
 docker run -d --name test -p 8080:8080 "$IMAGE" > /dev/null
 sleep 10
-curl --fail http://localhost:8080/cubix/test
+curl --fail http://localhost:8080/demo/test
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "Verification failed, here are the logs"
