@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-      - "ci/**"
-      - "feature/**" # for test purposes, to run the workflow on feature branch pushes as well
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build-maven:
