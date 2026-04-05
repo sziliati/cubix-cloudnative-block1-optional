@@ -1,0 +1,26 @@
+name: Runs only on pull requests to main
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - "ci/**"
+jobs:
+  integration-test:
+    name: Run integration test on pull requests to main
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "26"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Run integration tests
+        run: ./mvnw clean integration-test

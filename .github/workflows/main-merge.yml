@@ -1,0 +1,64 @@
+name: Run only if pull request is merged to main or directly pushed to main
+
+on:
+  push:
+    branches:
+      - main
+      - "ci/**"
+
+jobs:
+  build-maven:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "26"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Build with Maven
+        run: ./mvnw clean package verify
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: java-optional-app
+          path: "${{ github.workspace }}/target/*.jar"
+
+  build-docker:
+    runs-on: ubuntu-latest
+    needs: build-maven
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: java-optional-app
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/cubix/1/optional/app:springboot
+
+  verify-docker:
+    runs-on: ubuntu-latest
+    needs: build-docker
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Verify
+        run: sh ./verify-image.sh
